@@ -1,0 +1,63 @@
+!pip install lazypredict
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+#check null values
+dataset.isnull().sum
+
+#import the dataset
+x = dataset.iloc[:, :-1].values
+y = dataset.iloc[:, 1].values
+
+print(x)
+print(y)
+
+#Splitting the Dataset into Train and Test Set
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test= train_test_split(x,y,test_size=0.1, random_state=1)
+
+print(x_train)
+print(x_test)
+print(y_test)
+print(y_train)
+
+#Plotting the Distribution of scores
+
+dataset.plot(x='Hours', y='Scores', style='o')  
+plt.title('Hours vs Scores')  
+plt.xlabel('Hours Studied')  
+plt.ylabel('Score achived')  
+plt.show()
+
+#Training the LassoLars model on the whole dataset
+from sklearn import linear_model
+regressor = linear_model.LassoLars(alpha=0.01)
+x_train= x_train.reshape(-1,1)
+regressor.fit(x_train, y_train, None)
+
+x_test= x_test.reshape(-1,1)
+y_pred= regressor.predict(x_test)
+
+regressor.score(x_train, y_train, sample_weight=None)
+
+#Visualizing the LassoLars model result
+plt.scatter(x, y, color = 'red')
+plt.plot(x, regressor.predict(x), color = 'blue')
+plt.title('Hours vs Scores')
+plt.xlabel('Study Hours')
+plt.ylabel('Score Achived')
+plt.show()
+
+#Comparing Predicting the Actual vs Predicted values
+df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})  
+df
+
+#Predicted Score if a student Studies 9.25 hours a day.
+regressor.predict([[9.25]])
+
+#Mean Absolute Error
+from sklearn import metrics  
+print('Mean Absolute Error:', 
+      metrics.mean_absolute_error(y_test, y_pred)) 
+
